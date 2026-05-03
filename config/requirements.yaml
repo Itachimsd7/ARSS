@@ -1,0 +1,13 @@
+job_description: |
+  Looking for a Python developer with knowledge in machine learning,
+  data analysis, and SQL. Experience with NLP is a plus.
+
+skills:
+  - python
+  - machine learning
+  - sql
+  - nlp
+
+min_experience: 1
+
+education: btech

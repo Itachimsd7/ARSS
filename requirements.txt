@@ -1,0 +1,18 @@
+# PDF Parsing
+PyMuPDF==1.25.5
+pdfplumber==0.11.6
+pypdf==5.4.0
+
+# DOCX Parsing
+python-docx==1.1.2
+
+# NLP — spaCy
+spacy==3.8.4
+
+# Machine Learning — scikit-learn
+scikit-learn==1.6.1
+numpy==2.2.5
+scipy==1.15.2
+
+# YAML
+PyYAML==6.0.2
