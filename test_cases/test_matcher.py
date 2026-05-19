@@ -1,8 +1,6 @@
 import database.db as db
 import inspect
 
-print("DB FILE USED:", inspect.getfile(db))
-print("FUNCTION FOUND:", hasattr(db, "insert_candidate"))
 import os
 import yaml
 
@@ -25,19 +23,18 @@ education = config["education"]
 
 for filename in os.listdir(RESUMES_DIR):
     filepath = os.path.join(RESUMES_DIR, filename)
-    print("STEP 1")
+    
     resume_text = extract_text(filepath)
-    print("STEP 2")
+    
     info = extract_info(resume_text)
-    print("STEP 3")
+   
     similarity = compute_similarity(resume_text, job_description)
-    print("STEP 4")
+    
     score = calculate_score(similarity, info["experience"])
-    print("STEP 5")
+    
     result = classify_candidate(score, info["education"], education)
-    print("STEP 6 - BEFORE INSERT")
     db.insert_candidate(info, score, result)
-    print("STEP 7 - AFTER INSERT")
+
     print(f"File       : {filename}")
     print(f"Similarity : {similarity}")
     print(f"Final Score: {score}")

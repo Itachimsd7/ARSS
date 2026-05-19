@@ -1,8 +1,11 @@
 import re
+# TOP OF extractor.py — outside any function
 import spacy
+nlp = spacy.load("en_core_web_sm")  # loaded ONCE when module is first imported
 
-# Load spaCy model
-nlp = spacy.load("en_core_web_sm")
+def extract_info(text):
+    doc = nlp(text)  # reuse the already-loaded model
+    ...
 
 # Predefined skill list
 SKILLS = [
