@@ -1,6 +1,44 @@
+# Python
 .venv/
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
+*.egg-info/
+dist/
+build/
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment — NEVER commit secrets
 .env
+.env.local
+.env.production
+
+# Build output
+client/dist/
+client/build/
+
+# Uploads — files are deleted after processing but just in case
+server/uploads/*
+!server/uploads/.gitkeep
+
+# IDE
+.vscode/settings.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/

@@ -1,3 +1,6 @@
+# This file is used for uploading candidate profile
+
+
 import database.db as db
 import inspect
 
@@ -15,6 +18,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CONFIG_PATH = os.path.join(BASE_DIR, "config", "requirements.yaml")
 RESUMES_DIR = os.path.join(BASE_DIR, "data", "resumes")
 
+""" the below fucntion is for upload the profile only """
 with open(CONFIG_PATH, "r") as f:
     config = yaml.safe_load(f)
 

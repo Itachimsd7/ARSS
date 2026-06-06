@@ -369,13 +369,7 @@ ai-resume-screening-system/
 ```
 
 ---
-
-## 11. Author
-
-**Project:** AI Resume Screening System (ARSS)  
-**Type:** Academic / Portfolio Project  
-**Domain:** Natural Language Processing · Information Retrieval · Recruitment Automation
-
----
-
-*This project was developed for academic purposes to demonstrate practical applications of NLP and machine learning in automating the candidate screening process.*
+Aditya Basavaraj,
+CSE DEPARTMENT,
+GM UNIVERSITY,
+DAVANGERE
