@@ -25,7 +25,7 @@ router.post('/upload', upload.single('resume'), async (req, res) => {
 
   try {
     // ── Dedup check ───────────────────────────────────────────────────────────
-    const fileHash = hashFile(tempPath);
+    const fileHash = await hashFile(tempPath);
     const existing = await Candidate.findOne({ fileHash });
 
     if (existing) {
