@@ -74,17 +74,12 @@ def compute_similarity(resume_text, job_description):
         _job_vector = None  # force re-fit on next step
 
     if _job_vector is None:
-        # First time with this job description:
-        # Fit the vectorizer on BOTH texts together so the vocabulary
-        # includes words from both the job description AND the resume.
-        # Then transform both into TF-IDF vectors.
-        combined = _vectorizer.fit_transform([job_description, resume_text])
-        _job_vector = combined[0]    # cache the job description vector for reuse
-        resume_vector = combined[1]  # the resume's vector
-    else:
-        # Same job description as before — just transform the new resume
-        # using the already-fitted vectorizer (faster, no re-fitting)
-        resume_vector = _vectorizer.transform([resume_text])[0]
+        # Fit the vectorizer on the job description only so the vocabulary
+        # is determined solely by the job requirements.
+        _job_vector = _vectorizer.fit_transform([job_description])[0]
+
+    # Transform the resume text using the consistent job vocabulary
+    resume_vector = _vectorizer.transform([resume_text])[0]
 
     # ── Compute cosine similarity between the two vectors ─────────────────────
     # cosine_similarity returns a 2D array — we extract the single value [0][0]

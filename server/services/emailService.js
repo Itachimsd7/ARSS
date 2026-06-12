@@ -35,32 +35,32 @@
  *   server/routes/admin.js             (sendCandidateStatusEmail on status change)
  */
 
-const { ImapFlow }     = require('imapflow');    // IMAP client library
+const { ImapFlow } = require('imapflow');    // IMAP client library
 const { simpleParser } = require('mailparser');  // parses raw email source into structured data
-const nodemailer       = require('nodemailer');  // sends emails via SMTP
-const fs               = require('fs');
-const path             = require('path');
+const nodemailer = require('nodemailer');  // sends emails via SMTP
+const fs = require('fs');
+const path = require('path');
 
 // Database models
 const Candidate = require('../models/Candidate');
-const Config    = require('../models/Config');
+const Config = require('../models/Config');
 
 // The AI pipeline runner and file hash utility
 const { runPipeline } = require('./pythonPipeline');
-const { hashFile }    = require('../utils/fileHash');
+const { hashFile } = require('../utils/fileHash');
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Constants
 // ─────────────────────────────────────────────────────────────────────────────
 
 // File extensions that are recognized as resume files
-const RESUME_EXTENSIONS   = ['.pdf', '.docx', '.doc'];
+const RESUME_EXTENSIONS = ['.pdf', '.docx', '.doc'];
 
 // Temporary folder where email attachments are saved before processing
-const UPLOAD_DIR          = path.join(__dirname, '..', 'uploads');
+const UPLOAD_DIR = path.join(__dirname, '..', 'uploads');
 
 // IMAP IDLE must be refreshed before Gmail's 10-minute timeout
-const IDLE_TIMEOUT        = 9 * 60 * 1000; // 9 minutes in milliseconds
+const IDLE_TIMEOUT = 9 * 60 * 1000; // 9 minutes in milliseconds
 
 // Maximum reconnection delay (backoff caps at 60 seconds)
 const MAX_RECONNECT_DELAY = 60000;
@@ -229,8 +229,8 @@ const sendCandidateStatusEmail = async (candidate, status) => {
   try {
     // Send the email via Gmail SMTP
     const info = await getTransporter().sendMail({
-      from:    `"ARSS Recruitment" <${process.env.GMAIL_USER}>`, // sender display name
-      to:      candidate.email,  // recipient
+      from: `"ARSS Recruitment" <${process.env.GMAIL_USER}>`, // sender display name
+      to: candidate.email,  // recipient
       subject,
       html,    // HTML email body
     });
@@ -263,9 +263,9 @@ const findResumeAttachment = (parsed) => {
   if (!parsed.attachments?.length) return null; // no attachments at all
 
   return parsed.attachments.find((att) => {
-    const filename    = att.filename || att.name || '';
+    const filename = att.filename || att.name || '';
     const contentType = (att.contentType || '').toLowerCase();
-    const ext         = path.extname(filename).toLowerCase();
+    const ext = path.extname(filename).toLowerCase();
 
     // Match by file extension (most reliable)
     if (RESUME_EXTENSIONS.includes(ext) && att.content) return true;
@@ -308,11 +308,11 @@ const findResumeAttachment = (parsed) => {
  */
 const processEmailMessage = async (parsed) => {
   // ── Extract sender information from email headers ─────────────────────────
-  const from        = parsed.from?.value?.[0] || {};
+  const from = parsed.from?.value?.[0] || {};
   const senderEmail = from.address || ''; // e.g. "john@gmail.com"
-  const senderName  = from.name   || ''; // e.g. "John Doe"
-  const subject     = parsed.subject || '(no subject)';
-  const t0          = Date.now();         // track processing time
+  const senderName = from.name || ''; // e.g. "John Doe"
+  const subject = parsed.subject || '(no subject)';
+  const t0 = Date.now();         // track processing time
 
   // ── Debug logging: show what attachments came in ──────────────────────────
   const attCount = parsed.attachments?.length || 0;
@@ -342,15 +342,15 @@ const processEmailMessage = async (parsed) => {
   if (!originalFilename) {
     // Fall back to a sensible filename based on MIME type
     const ct = (attachment.contentType || '').toLowerCase();
-    originalFilename = ct.includes('pdf')  ? 'resume.pdf'
-                     : ct.includes('word') ? 'resume.docx'
-                     : 'resume.pdf';
+    originalFilename = ct.includes('pdf') ? 'resume.pdf'
+      : ct.includes('word') ? 'resume.docx'
+        : 'resume.pdf';
   }
 
   // Generate a unique filename to avoid collisions in the uploads folder
   // Format: email-<timestamp>-<random>.<ext>
-  const ext      = path.extname(originalFilename).toLowerCase() || '.pdf';
-  const fname    = `email-${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`;
+  const ext = path.extname(originalFilename).toLowerCase() || '.pdf';
+  const fname = `email-${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`;
   const filePath = path.join(UPLOAD_DIR, fname);
 
   // Write the attachment bytes to disk
@@ -378,7 +378,7 @@ const processEmailMessage = async (parsed) => {
     const dbConfig = await Config.findOne({ key: 'job_requirements' });
     if (dbConfig) config = dbConfig.value;
     // If no config in DB, Python will fall back to requirements.yaml
-  } catch (_) {}
+  } catch (_) { }
 
   // ── Step 5: Run the Python AI Pipeline ───────────────────────────────────
   // This spawns python pipeline_runner.py and gets back the scored result
@@ -393,7 +393,7 @@ const processEmailMessage = async (parsed) => {
   }
 
   // ── Step 6: Determine the name and email to use ───────────────────────────
-  const name  = result.name  || senderName  || 'Unknown';
+  const name = result.name || senderName || 'Unknown';
   // IMPORTANT: Always prefer the sender's email (from Gmail headers).
   // The email extracted from resume text might be outdated or wrong.
   const email = senderEmail || result.email || '';
@@ -406,12 +406,12 @@ const processEmailMessage = async (parsed) => {
     candidate = await Candidate.create({
       name,
       email,
-      phone:           result.phone      || '',
-      skills:          result.skills     || [],
-      education:       result.education  || '',
-      experience:      result.experience || 0,
-      score:           result.score      || 0,
-      similarity:      result.similarity || 0,
+      phone: result.phone || '',
+      skills: result.skills || [],
+      education: result.education || '',
+      experience: result.experience || 0,
+      score: result.score || 0,
+      similarity: result.similarity || 0,
       matchPercentage: matchPct,
 
       // AI classification result (QUALIFIED / SHORTLIST / REJECT)
@@ -422,18 +422,18 @@ const processEmailMessage = async (parsed) => {
       // REJECT    → rejected    (auto-rejected, admin can override)
       // Otherwise → pending     (needs admin review)
       status: result.result === 'QUALIFIED' ? 'shortlisted'
-            : result.result === 'REJECT'    ? 'rejected' : 'pending',
+        : result.result === 'REJECT' ? 'rejected' : 'pending',
 
       missingSkills: result.missingSkills || [],
-      suggestions:   result.suggestions  || [],
-      strengths:     result.strengths    || [],
-      weaknesses:    result.weaknesses   || [],
+      suggestions: result.suggestions || [],
+      strengths: result.strengths || [],
+      weaknesses: result.weaknesses || [],
 
-      fileName:  originalFilename,
-      filePath:  '',          // intentionally empty — file is deleted below
-      fileSize:  attachment.content.length,
+      fileName: originalFilename,
+      filePath: '',          // intentionally empty — file is deleted below
+      fileSize: attachment.content.length,
       fileHash,               // stored for future dedup checks
-      source:    'email',     // marks this came from email, not web upload
+      source: 'email',     // marks this came from email, not web upload
 
       // Auto-note for admin to see where this submission came from
       adminNotes: `Email | Sender: ${senderEmail} | Resume email: ${result.email || 'none'} | Subject: ${subject}`,
@@ -441,7 +441,7 @@ const processEmailMessage = async (parsed) => {
   } catch (err) {
     console.error('[idle] DB error:', err.message);
     // Clean up file if DB save fails
-    try { if (fs.existsSync(filePath)) fs.unlinkSync(filePath); } catch (_) {}
+    try { if (fs.existsSync(filePath)) fs.unlinkSync(filePath); } catch (_) { }
     return 'error';
   }
 
@@ -463,7 +463,7 @@ const processEmailMessage = async (parsed) => {
   // ── Step 9: Send "Application Received" confirmation email ────────────────
   // Notify the candidate that their resume was received and is being reviewed
   if (email) {
-    sendCandidateStatusEmail(candidate, 'received').catch(() => {});
+    sendCandidateStatusEmail(candidate, 'received').catch(() => { });
     // .catch(() => {}) means email failure won't crash the main flow
   }
 
@@ -476,9 +476,9 @@ const processEmailMessage = async (parsed) => {
 
 // Module-level state variables for the IMAP connection
 let _idleClient = null;   // the active ImapFlow client instance
-let _idleTimer  = null;   // timer for periodic IDLE refresh
-let _running    = false;  // is the listener currently active?
-let _stopping   = false;  // are we intentionally stopping?
+let _idleTimer = null;   // timer for periodic IDLE refresh
+let _running = false;  // is the listener currently active?
+let _stopping = false;  // are we intentionally stopping?
 
 /**
  * fetchUnseen — Fetch and process all unread emails in the inbox.
@@ -552,8 +552,8 @@ const connectIdle = async () => {
 
   // Create a new IMAP client configured for Gmail
   const client = new ImapFlow({
-    host:   'imap.gmail.com', // Gmail's IMAP server
-    port:   993,              // IMAPS port (IMAP over TLS)
+    host: 'imap.gmail.com', // Gmail's IMAP server
+    port: 993,              // IMAPS port (IMAP over TLS)
     secure: true,             // use TLS encryption
     auth: {
       user: process.env.GMAIL_USER,
@@ -604,7 +604,7 @@ const connectIdle = async () => {
         console.log(`[idle] ⚡ New email detected (EXISTS: ${data.count})`);
         newMailPending = true;
         // noop() sends a no-op command that causes idle() to return
-        try { await client.noop(); } catch (_) {}
+        try { await client.noop(); } catch (_) { }
       });
 
       // ── Main IDLE Loop ────────────────────────────────────────────────────
@@ -672,13 +672,13 @@ const startPolling = () => {
 
   if (_running) return; // already running — don't start twice
 
-  _running  = true;
+  _running = true;
   _stopping = false;
 
   // Verify SMTP connection on startup (to ensure outbound emails will work)
   getTransporter().verify((err) => {
     if (err) console.error('[smtp] Verification failed:', err.message);
-    else     console.log('[smtp] ✓ Ready to send emails');
+    else console.log('[smtp] ✓ Ready to send emails');
   });
 
   console.log(`[email] Starting IMAP IDLE for ${process.env.GMAIL_USER}`);
@@ -696,12 +696,12 @@ const startPolling = () => {
  */
 const stopPolling = async () => {
   _stopping = true;
-  _running  = false;
+  _running = false;
   clearTimeout(_idleTimer);
 
   // Gracefully log out from Gmail IMAP if still connected
   if (_idleClient?.usable) {
-    try { await _idleClient.logout(); } catch (_) {}
+    try { await _idleClient.logout(); } catch (_) { }
   }
 
   console.log('[email] Stopped');
@@ -712,6 +712,6 @@ module.exports = {
   startPolling,
   stopPolling,
   sendCandidateStatusEmail,  // used by server/routes/admin.js for status change emails
-  handlePushNotification: async () => {}, // stub kept for webhook route compatibility
+  handlePushNotification: async () => { }, // stub kept for webhook route compatibility
   pollOnce: fetchUnseen,     // exposed for manual polling if ever needed
 };

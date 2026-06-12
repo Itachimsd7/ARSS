@@ -37,6 +37,7 @@ import yaml
 from pathlib import Path
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import time
+import gc
 
 # Add the project root directory to Python's module search path
 # This allows us to import from the 'modules' and 'database' folders
@@ -239,6 +240,8 @@ class PipelineHandler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(json.dumps({"error": str(e)}).encode())
             print(f"[pipeline] Error: {e}", flush=True)
+        finally:
+            gc.collect()
 
     def do_GET(self):
         """Handle GET request — health check."""

@@ -26,7 +26,7 @@ import re
 # It's loaded ONCE here at module import time (not inside any function)
 # because loading takes ~1 second — we don't want to reload it for every resume.
 import spacy
-nlp = spacy.load("en_core_web_sm")
+nlp = spacy.load("en_core_web_sm", disable=["tagger", "parser", "attribute_ruler", "lemmatizer"])
 
 
 # ── Predefined Skill Keywords ─────────────────────────────────────────────────
