@@ -1,6 +1,8 @@
-import { Suspense, lazy } from 'react'
+import { Suspense, lazy, useState, useCallback } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
+import CustomCursor from './components/ui/CustomCursor'
+import PageLoader from './components/ui/PageLoader'
 
 // Lazy-loaded pages
 const LandingPage    = lazy(() => import('./pages/LandingPage.jsx'))
@@ -15,15 +17,16 @@ function Fallback() {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      background: '#020617',
-      color: '#6366f1',
+      background: '#030014',
+      color: '#8b5cf6',
       fontSize: 16,
       gap: 12,
+      fontFamily: 'Space Grotesk, system-ui, sans-serif',
     }}>
       <div style={{
         width: 32, height: 32, borderRadius: '50%',
-        border: '3px solid rgba(99,102,241,0.3)',
-        borderTopColor: '#6366f1',
+        border: '3px solid rgba(139,92,246,0.2)',
+        borderTopColor: '#8b5cf6',
         animation: 'spin 0.8s linear infinite',
       }} />
       Loading...
@@ -43,31 +46,38 @@ function PublicAdminRoute({ children }) {
 }
 
 export default function App() {
+  const [loaded, setLoaded] = useState(false)
+  const handleLoaded = useCallback(() => setLoaded(true), [])
+
   return (
-    <BrowserRouter>
-      <Suspense fallback={<Fallback />}>
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/upload" element={<UploadPage />} />
-          <Route
-            path="/admin-login"
-            element={
-              <PublicAdminRoute>
-                <AdminLoginPage />
-              </PublicAdminRoute>
-            }
-          />
-          <Route
-            path="/admin-dashboard"
-            element={
-              <ProtectedRoute>
-                <AdminDashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </Suspense>
-    </BrowserRouter>
+    <>
+      {!loaded && <PageLoader onComplete={handleLoaded} />}
+      <CustomCursor />
+      <BrowserRouter>
+        <Suspense fallback={<Fallback />}>
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/upload" element={<UploadPage />} />
+            <Route
+              path="/admin-login"
+              element={
+                <PublicAdminRoute>
+                  <AdminLoginPage />
+                </PublicAdminRoute>
+              }
+            />
+            <Route
+              path="/admin-dashboard"
+              element={
+                <ProtectedRoute>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Suspense>
+      </BrowserRouter>
+    </>
   )
 }

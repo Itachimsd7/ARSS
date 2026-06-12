@@ -60,21 +60,27 @@ export default function AdminLayout({ activeTab, onTabChange, children }) {
   };
 
   return (
-    <div className="flex h-screen bg-surface-950 overflow-hidden">
+    <div className="flex h-screen bg-space-950 overflow-hidden">
       {/* Sidebar */}
       <motion.aside
-        animate={{ width: sidebarOpen ? 256 : 72 }}
-        transition={{ duration: 0.3, ease: 'easeInOut' }}
-        className="flex-shrink-0 glass-dark border-r border-white/5 flex flex-col overflow-hidden"
+        animate={{ width: sidebarOpen ? 260 : 72 }}
+        transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+        className="flex-shrink-0 border-r border-white/5 flex flex-col overflow-hidden relative"
+        style={{ background: 'linear-gradient(180deg, rgba(13,5,32,0.95) 0%, rgba(3,0,20,0.98) 100%)' }}
       >
+        {/* Subtle sidebar glow */}
+        <div className="absolute top-0 right-0 w-px h-full pointer-events-none"
+          style={{ background: 'linear-gradient(180deg, transparent, rgba(139,92,246,0.2), transparent)' }} />
+
         {/* Logo */}
         <div className="flex items-center gap-3 px-4 py-5 border-b border-white/5">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-accent-500 flex items-center justify-center flex-shrink-0">
-            <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-            </svg>
-          </div>
+          <motion.div
+            whileHover={{ scale: 1.05, rotate: 5 }}
+            className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+            style={{ background: 'linear-gradient(135deg, #7c3aed, #06b6d4)' }}
+          >
+            <span className="text-white font-display font-bold text-sm">AI</span>
+          </motion.div>
           <AnimatePresence>
             {sidebarOpen && (
               <motion.div
@@ -83,8 +89,8 @@ export default function AdminLayout({ activeTab, onTabChange, children }) {
                 exit={{ opacity: 0, x: -10 }}
                 transition={{ duration: 0.2 }}
               >
-                <p className="text-sm font-bold text-white whitespace-nowrap">ARSS Admin</p>
-                <p className="text-xs text-white/40 whitespace-nowrap">AI Screening System</p>
+                <p className="text-sm font-display font-bold text-white whitespace-nowrap">ARSS Admin</p>
+                <p className="text-xs text-white/30 whitespace-nowrap">AI Screening System</p>
               </motion.div>
             )}
           </AnimatePresence>
@@ -96,20 +102,32 @@ export default function AdminLayout({ activeTab, onTabChange, children }) {
             <button
               key={item.id}
               onClick={() => onTabChange(item.id)}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-display font-medium transition-all duration-300 relative group ${
                 activeTab === item.id
-                  ? 'bg-brand-600/20 text-brand-400 border border-brand-500/30'
-                  : 'text-white/50 hover:text-white/80 hover:bg-white/5'
+                  ? 'text-white'
+                  : 'text-white/40 hover:text-white/70 hover:bg-white/[0.03]'
               }`}
             >
-              <span className="flex-shrink-0">{item.icon}</span>
+              {/* Active indicator */}
+              {activeTab === item.id && (
+                <motion.div
+                  layoutId="sidebar-active"
+                  className="absolute inset-0 rounded-xl"
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(139,92,246,0.15), rgba(6,182,212,0.05))',
+                    border: '1px solid rgba(139,92,246,0.2)',
+                  }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                />
+              )}
+              <span className="flex-shrink-0 relative z-10">{item.icon}</span>
               <AnimatePresence>
                 {sidebarOpen && (
                   <motion.span
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="whitespace-nowrap"
+                    className="whitespace-nowrap relative z-10"
                   >
                     {item.label}
                   </motion.span>
@@ -123,13 +141,13 @@ export default function AdminLayout({ activeTab, onTabChange, children }) {
         <div className="px-2 py-4 border-t border-white/5 space-y-2">
           {sidebarOpen && admin && (
             <div className="px-3 py-2">
-              <p className="text-xs font-medium text-white/80 truncate">{admin.name}</p>
-              <p className="text-xs text-white/40 truncate">{admin.email}</p>
+              <p className="text-xs font-display font-medium text-white/70 truncate">{admin.name}</p>
+              <p className="text-xs text-white/30 truncate">{admin.email}</p>
             </div>
           )}
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-danger-400 hover:bg-danger-500/10 transition-all duration-200"
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-display font-medium text-danger-400 hover:bg-danger-500/10 transition-all duration-300"
           >
             <svg className="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
@@ -143,32 +161,44 @@ export default function AdminLayout({ activeTab, onTabChange, children }) {
       {/* Main content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Top bar */}
-        <header className="flex items-center justify-between px-6 py-4 border-b border-white/5 glass-dark flex-shrink-0">
+        <header className="flex items-center justify-between px-6 py-4 border-b border-white/5 flex-shrink-0"
+          style={{ background: 'rgba(3,0,20,0.8)', backdropFilter: 'blur(20px)' }}
+        >
           <div className="flex items-center gap-4">
-            <button
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="p-2 rounded-lg text-white/50 hover:text-white hover:bg-white/5 transition-all"
+              className="p-2 rounded-lg text-white/40 hover:text-white hover:bg-white/5 transition-all"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
-            </button>
+            </motion.button>
             <div>
-              <h1 className="text-lg font-semibold text-white">
+              <h1 className="text-lg font-display font-semibold text-white">
                 {NAV_ITEMS.find((n) => n.id === activeTab)?.label || 'Dashboard'}
               </h1>
-              <p className="text-xs text-white/40">AI Resume Screening System</p>
+              <p className="text-xs text-white/30">AI Resume Screening System</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <div className="w-2 h-2 rounded-full bg-accent-400 animate-pulse" />
-            <span className="text-xs text-white/50">System Online</span>
+            <motion.div
+              animate={{ scale: [1, 1.3, 1] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              className="w-2 h-2 rounded-full bg-accent-400"
+              style={{ boxShadow: '0 0 8px rgba(16,185,129,0.5)' }}
+            />
+            <span className="text-xs text-white/40 font-display">System Online</span>
           </div>
         </header>
 
         {/* Page content */}
-        <main className="flex-1 overflow-y-auto p-6 bg-grid">
-          {children}
+        <main className="flex-1 overflow-y-auto p-6 relative">
+          <div className="absolute inset-0 bg-grid opacity-20 pointer-events-none" />
+          <div className="relative">
+            {children}
+          </div>
         </main>
       </div>
     </div>

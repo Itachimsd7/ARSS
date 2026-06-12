@@ -39,7 +39,7 @@ const http      = require('http');
 const PYTHON_SCRIPT = path.join(__dirname, '..', '..', 'pipeline_runner.py');
 
 // Port the Python server listens on (localhost only — not exposed externally)
-const PIPELINE_PORT = 5001;
+const PIPELINE_PORT = 5002;
 
 // ── Module-level state ───────────────────────────────────────────────────────
 let _pythonProcess = null;  // the child process running the Python server
