@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import TextPressure from '../components/ui/TextPressure';
 import ScrollFloat from '../components/ui/ScrollFloat';
 import GlareHover from '../components/ui/GlareHover';
-import Galaxy from '../components/ui/Galaxy';
+import LightRays from '../components/ui/LightRays';
 import AnimatedCounter from '../components/ui/AnimatedCounter';
 import RevealOnScroll, { RevealChild } from '../components/ui/RevealOnScroll';
 
@@ -101,27 +101,27 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen text-white overflow-x-hidden" style={{ background: '#04071e' }}>
 
-      {/* ── Galaxy background — fixed, full screen ── */}
+      {/* ── LightRays background — fixed, full screen ── */}
       <div className="fixed inset-0 pointer-events-none" style={{ zIndex: 0 }}>
-        <Galaxy
-          mouseInteraction={true}
-          mouseRepulsion={true}
-          density={1.2}
-          glowIntensity={0.35}
-          saturation={0.6}
-          hueShift={38}
-          twinkleIntensity={0.4}
-          rotationSpeed={0.04}
-          repulsionStrength={2.5}
-          transparent={true}
-          speed={0.8}
-          style={{ width: '100%', height: '100%' }}
+        <LightRays
+          raysOrigin="top-center"
+          raysColor="#f5a623"
+          raysSpeed={0.6}
+          lightSpread={0.65}
+          rayLength={1.6}
+          pulsating={true}
+          fadeDistance={1.2}
+          saturation={0.85}
+          followMouse={true}
+          mouseInfluence={0.08}
+          noiseAmount={0.04}
+          distortion={0.03}
         />
       </div>
 
-      {/* Subtle colour overlay so content stays readable over galaxy */}
+      {/* Dark overlay so text stays readable over the rays */}
       <div className="fixed inset-0 pointer-events-none" style={{ zIndex: 1,
-        background: 'radial-gradient(ellipse at 50% 0%, rgba(245,158,11,0.06) 0%, transparent 60%)' }} />
+        background: 'linear-gradient(to bottom, rgba(4,7,30,0.55) 0%, rgba(4,7,30,0.2) 40%, rgba(4,7,30,0.7) 100%)' }} />
 
       {/* All page content sits above galaxy */}
       <div className="relative" style={{ zIndex: 2 }}>
