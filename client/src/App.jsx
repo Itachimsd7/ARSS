@@ -1,10 +1,7 @@
-import { Suspense, lazy, useState, useCallback } from 'react'
+import { Suspense, lazy } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
-import CustomCursor from './components/ui/CustomCursor'
-import PageLoader from './components/ui/PageLoader'
 
-// Lazy-loaded pages
 const LandingPage    = lazy(() => import('./pages/LandingPage.jsx'))
 const UploadPage     = lazy(() => import('./pages/UploadPage.jsx'))
 const AdminLoginPage = lazy(() => import('./pages/AdminLoginPage.jsx'))
@@ -46,38 +43,31 @@ function PublicAdminRoute({ children }) {
 }
 
 export default function App() {
-  const [loaded, setLoaded] = useState(false)
-  const handleLoaded = useCallback(() => setLoaded(true), [])
-
   return (
-    <>
-      {!loaded && <PageLoader onComplete={handleLoaded} />}
-      <CustomCursor />
-      <BrowserRouter>
-        <Suspense fallback={<Fallback />}>
-          <Routes>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/upload" element={<UploadPage />} />
-            <Route
-              path="/admin-login"
-              element={
-                <PublicAdminRoute>
-                  <AdminLoginPage />
-                </PublicAdminRoute>
-              }
-            />
-            <Route
-              path="/admin-dashboard"
-              element={
-                <ProtectedRoute>
-                  <AdminDashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </Suspense>
-      </BrowserRouter>
-    </>
+    <BrowserRouter>
+      <Suspense fallback={<Fallback />}>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/upload" element={<UploadPage />} />
+          <Route
+            path="/admin-login"
+            element={
+              <PublicAdminRoute>
+                <AdminLoginPage />
+              </PublicAdminRoute>
+            }
+          />
+          <Route
+            path="/admin-dashboard"
+            element={
+              <ProtectedRoute>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Suspense>
+    </BrowserRouter>
   )
 }
