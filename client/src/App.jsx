@@ -1,6 +1,7 @@
 import { Suspense, lazy } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
+import CustomCursor from './components/ui/CustomCursor'
 
 const LandingPage    = lazy(() => import('./pages/LandingPage.jsx'))
 const UploadPage     = lazy(() => import('./pages/UploadPage.jsx'))
@@ -45,6 +46,7 @@ function PublicAdminRoute({ children }) {
 export default function App() {
   return (
     <BrowserRouter>
+      <CustomCursor />
       <Suspense fallback={<Fallback />}>
         <Routes>
           <Route path="/" element={<LandingPage />} />

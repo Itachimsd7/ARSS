@@ -99,7 +99,7 @@ const STATS = [
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen text-white overflow-x-hidden" style={{ background: '#04071e' }}>
+    <div className="min-h-screen text-white overflow-x-hidden">
 
       {/* ── LightRays background — fixed, full screen ── */}
       <div className="fixed inset-0 pointer-events-none" style={{ zIndex: 0 }}>
@@ -119,11 +119,7 @@ export default function LandingPage() {
         />
       </div>
 
-      {/* Dark overlay so text stays readable over the rays */}
-      <div className="fixed inset-0 pointer-events-none" style={{ zIndex: 1,
-        background: 'linear-gradient(to bottom, rgba(4,7,30,0.55) 0%, rgba(4,7,30,0.2) 40%, rgba(4,7,30,0.7) 100%)' }} />
-
-      {/* All page content sits above galaxy */}
+      {/* All page content sits above LightRays */}
       <div className="relative" style={{ zIndex: 2 }}>
 
         {/* ── Nav ── */}
