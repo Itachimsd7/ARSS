@@ -3,6 +3,7 @@ const router = express.Router();
 const Candidate = require('../models/Candidate');
 const { protect } = require('../middleware/auth');
 const { sendCandidateStatusEmail } = require('../services/emailService');
+const { logAdminAction } = require('../utils/logger');
 
 // All admin routes are protected
 router.use(protect);
@@ -159,6 +160,14 @@ router.patch('/candidates/:id/status', async (req, res) => {
       emailResult = await sendCandidateStatusEmail(candidate, status);
     }
 
+    logAdminAction('STATUS_UPDATE', {
+      candidateId: candidate._id,
+      name: candidate.name,
+      email: candidate.email,
+      newStatus: status,
+      adminNotes: candidate.adminNotes
+    });
+
     res.json({
       success: true,
       data: candidate,
@@ -196,6 +205,13 @@ router.delete('/candidates/:id', async (req, res) => {
     }
     // File is already deleted after processing — nothing to clean up on disk
     await candidate.deleteOne();
+
+    logAdminAction('CANDIDATE_DELETE', {
+      candidateId: candidate._id,
+      name: candidate.name,
+      email: candidate.email
+    });
+
     res.json({ success: true, message: 'Candidate deleted.' });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Server error.' });

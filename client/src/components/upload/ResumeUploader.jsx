@@ -58,15 +58,13 @@ export default function ResumeUploader({ onResult, toast }) {
 
     setLoading(true);
     setProgress(10);
-    const formData = new FormData();
-    formData.append('resume', file);
 
     try {
       const interval = setInterval(() => {
         setProgress((p) => (p < 85 ? p + Math.random() * 15 : p));
       }, 500);
 
-      const response = await resumeAPI.upload(formData);
+      const response = await resumeAPI.upload(file);
       clearInterval(interval);
       setProgress(100);
 

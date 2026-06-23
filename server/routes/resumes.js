@@ -7,6 +7,7 @@ const Candidate = require('../models/Candidate');
 const Config    = require('../models/Config');
 const { runPipeline } = require('../services/pythonPipeline');
 const { hashFile }    = require('../utils/fileHash');
+const { logUpload } = require('../utils/logger');
 
 // Helper — delete file silently
 const deleteFile = (filePath) => {
@@ -83,6 +84,16 @@ router.post('/upload', upload.single('resume'), async (req, res) => {
     // ── Delete file from disk immediately after DB save ───────────────────────
     deleteFile(tempPath);
     console.log(`[upload] File deleted after processing: ${req.file.originalname}`);
+
+    logUpload({
+      candidateId: candidate._id,
+      name: candidate.name,
+      email: candidate.email,
+      score: candidate.score,
+      result: candidate.result,
+      status: candidate.status,
+      fileName: candidate.fileName
+    });
 
     res.status(201).json({
       success: true,

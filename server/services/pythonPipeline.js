@@ -71,9 +71,20 @@ const startPythonServer = () => {
   _starting = new Promise((resolve) => {
     console.log('[pipeline] Starting persistent Python server...');
 
+    const rootDir = path.join(__dirname, '..', '..');
+    const venvPythonWindows = path.join(rootDir, '.venv', 'Scripts', 'python.exe');
+    const venvPythonUnix = path.join(rootDir, '.venv', 'bin', 'python');
+
+    let pythonCmd = 'python';
+    if (fs.existsSync(venvPythonWindows)) {
+      pythonCmd = venvPythonWindows;
+    } else if (fs.existsSync(venvPythonUnix)) {
+      pythonCmd = venvPythonUnix;
+    }
+
     // Spawn: python pipeline_runner.py --serve --port 5001
-    const proc = spawn('python', [PYTHON_SCRIPT, '--serve', '--port', String(PIPELINE_PORT)], {
-      cwd: path.join(__dirname, '..', '..'),
+    const proc = spawn(pythonCmd, [PYTHON_SCRIPT, '--serve', '--port', String(PIPELINE_PORT)], {
+      cwd: rootDir,
       stdio: ['ignore', 'pipe', 'pipe'], // stdin ignored, stdout/stderr piped
     });
 
