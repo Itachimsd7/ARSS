@@ -30,6 +30,7 @@ const Candidate = require('../models/Candidate');
 const Config = require('../models/Config');
 const { runPipeline, startPythonServer, stopPythonServer } = require('../services/pythonPipeline');
 const { hashFile } = require('../utils/fileHash');
+const { logToGoogleSheets } = require('../services/googleSheetsLogger');
 
 // Configuration
 const NUM_RESUMES = parseInt(process.argv[2], 10) || 100; // default to 100 for safety, run 1000 if specified
@@ -188,6 +189,16 @@ const runSimulation = async () => {
   console.log(`Final Heap Memory      : ${formatMemory(finalMemory)}`);
   console.log(`Heap Memory Growth     : ${formatMemory(finalMemory - initialMemory)}`);
   separator();
+
+  // Log to Google Sheets
+  await logToGoogleSheets('INFO', 'MassProcessor', 'Simulation Complete', {
+    totalResumes: NUM_RESUMES,
+    success: successCount,
+    failed: errorCount,
+    totalTimeSec: totalElapsed.toFixed(2),
+    avgTimeMs: (avgTime * 1000).toFixed(0),
+    memoryGrowthMB: ((finalMemory - initialMemory) / 1024 / 1024).toFixed(2)
+  });
 
   // Cleanup connections and child processes
   stopPythonServer();
