@@ -11,11 +11,33 @@ if (!fs.existsSync(LOGS_DIR)) {
 }
 
 /**
+ * Helper to get local ISO 8601 timestamp with timezone offset
+ * @returns {string} Local timestamp
+ */
+const getLocalTimestamp = () => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  const seconds = String(now.getSeconds()).padStart(2, '0');
+  const ms = String(now.getMilliseconds()).padStart(3, '0');
+  
+  const tzOffset = -now.getTimezoneOffset();
+  const sign = tzOffset >= 0 ? '+' : '-';
+  const tzHours = String(Math.floor(Math.abs(tzOffset) / 60)).padStart(2, '0');
+  const tzMins = String(Math.abs(tzOffset) % 60).padStart(2, '0');
+  
+  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${ms}${sign}${tzHours}:${tzMins}`;
+};
+
+/**
  * Log a resume upload event to uploads.log
  * @param {object} details - Upload details
  */
 const logUpload = (details) => {
-  const timestamp = new Date().toISOString();
+  const timestamp = getLocalTimestamp();
   const logMessage = `[${timestamp}] UPLOAD | DETAILS: ${JSON.stringify(details)}\n`;
   
   fs.appendFile(UPLOADS_LOG, logMessage, (err) => {
@@ -29,7 +51,7 @@ const logUpload = (details) => {
  * @param {object} details - Action details
  */
 const logAdminAction = (action, details) => {
-  const timestamp = new Date().toISOString();
+  const timestamp = getLocalTimestamp();
   const logMessage = `[${timestamp}] ACTION: ${action} | DETAILS: ${JSON.stringify(details)}\n`;
   
   fs.appendFile(ADMIN_LOG, logMessage, (err) => {

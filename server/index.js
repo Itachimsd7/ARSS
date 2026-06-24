@@ -20,6 +20,7 @@ require('dotenv').config(); // Load .env file variables into process.env
 const express = require('express');
 const cors    = require('cors');
 const path    = require('path');
+const fs      = require('fs');
 
 // Database connection function
 const connectDB = require('./config/db');
@@ -87,6 +88,22 @@ app.use('/api/email',   webhookRoutes); // POST /api/email/webhook (Google Pub/S
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
+
+// ── Serve Frontend Static Files in Production ──────────────────────────────────
+// In production (NODE_ENV=production) or if client/dist exists, serve the React build.
+const clientDistPath = path.join(__dirname, '..', 'client', 'dist');
+if (process.env.NODE_ENV === 'production' || fs.existsSync(clientDistPath)) {
+  app.use(express.static(clientDistPath));
+  
+  // Wildcard fallback: serve index.html for all non-API requests (SPA routing)
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
+      return next();
+    }
+    res.sendFile(path.join(clientDistPath, 'index.html'));
+  });
+  console.log('[startup] Serving production client build from client/dist');
+}
 
 // ── Global Error Handler ──────────────────────────────────────────────────────
 // Catches any errors that are passed via next(err) from route handlers.
